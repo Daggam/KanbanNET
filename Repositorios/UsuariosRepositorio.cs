@@ -4,6 +4,8 @@ using tl2_proyecto_2024_Daggam.Models;
 namespace tl2_proyecto_2024_Daggam.Repositorios{
     public interface IRepositorioUsuarios{
         void Crear(Usuario usuario);
+        IEnumerable<Usuario> ObtenerUsuarios();
+    
     }
 
     public class RepositorioUsuarios:IRepositorioUsuarios{
@@ -28,6 +30,25 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
             }
         }
 
-        
+        public IEnumerable<Usuario> ObtenerUsuarios(){
+            using (var connection = new SqliteConnection(connectionString)){
+                connection.Open();
+                ICollection<Usuario> usuarios = new List<Usuario>();
+                var command =  connection.CreateCommand();
+                command.CommandText = "SELECT * FROM Usuario";
+                using(var reader = command.ExecuteReader()){
+                    while(reader.Read()){
+                        usuarios.Add(new Usuario(){
+                            Id = reader.GetInt32(0),
+                            NombreDeUsuario=reader.GetString(1),
+                            Password = reader.GetString(2),
+                            RolUsuario = (RolUsuario) reader.GetInt16(3)
+                        });
+                    }
+                }
+                connection.Close();
+                return usuarios.AsEnumerable();
+            }
+        }
     }
 }

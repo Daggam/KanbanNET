@@ -1,3 +1,4 @@
+@model IEnumerable<tl2_proyecto_2024_Daggam.ViewModels.ListarUsuarioViewModel>
 @{
     ViewData["Title"] = "Usuarios";
 }
@@ -6,3 +7,29 @@
     <h1 class="display-4">Usuarios</h1>
     <a asp-action="Crear" class="btn btn-primary">Crear Usuario</a>
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Nombre de usuario</th>
+            <th>Rol</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var usuario in Model){
+            <tr>
+                <td>
+                    <a asp-action="Editar"asp-route-id="@usuario.Id" class="btn btn-primary">Editar</a>
+                    <a asp-action="Borrar"asp-route-id="@usuario.Id" class="btn btn-danger">Borrar</a>
+                </td>
+                <td>
+                    @usuario.NombreDeUsuario
+                </td>
+                <td>
+                    @usuario.RolUsuario.ToString()
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -15,7 +15,14 @@ public class UsuariosController:Controller{
     }
     //Lista los usuarios
     public IActionResult Index(){
-        return View();
+        var usuarios = repositorioUsuarios.ObtenerUsuarios();
+        IEnumerable<ListarUsuarioViewModel> usuariosvm = usuarios.Select(u => 
+                                                            new ListarUsuarioViewModel(){
+                                                                Id = u.Id,
+                                                                NombreDeUsuario = u.NombreDeUsuario,
+                                                                RolUsuario = u.RolUsuario})
+                                                        .ToList();
+        return View(usuariosvm);
     }
     public IActionResult Crear(){
         var modelo = new CrearUsuarioViewModel();
