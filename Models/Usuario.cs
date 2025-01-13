@@ -9,6 +9,6 @@ namespace tl2_proyecto_2024_Daggam.Models
         public int Id { get; set; }
         public string NombreDeUsuario { get; set; } = null!;
         public string Password { get; set; } = null!;
-        public RolUsuario RolUsuario { get; set; } = RolUsuario.Operador;
+        public RolUsuario RolUsuario { get; set; }
     }
 }

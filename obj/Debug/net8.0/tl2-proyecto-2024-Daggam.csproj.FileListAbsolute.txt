@@ -28,3 +28,4 @@ C:\Users\Admin\Desktop\Facultad\3 - TERCER ANIO\SEGUNDO CUATRIMESTRE\Taller de L
 C:\Users\Admin\Desktop\Facultad\3 - TERCER ANIO\SEGUNDO CUATRIMESTRE\Taller de Lenguajes II\tl2-proyecto-2024-Daggam\obj\Debug\net8.0\tl2-proyecto-2024-Daggam.pdb
 C:\Users\Admin\Desktop\Facultad\3 - TERCER ANIO\SEGUNDO CUATRIMESTRE\Taller de Lenguajes II\tl2-proyecto-2024-Daggam\obj\Debug\net8.0\tl2-proyecto-2024-Daggam.genruntimeconfig.cache
 C:\Users\Admin\Desktop\Facultad\3 - TERCER ANIO\SEGUNDO CUATRIMESTRE\Taller de Lenguajes II\tl2-proyecto-2024-Daggam\obj\Debug\net8.0\ref\tl2-proyecto-2024-Daggam.dll
+C:\Users\Admin\Desktop\Facultad\3 - TERCER ANIO\SEGUNDO CUATRIMESTRE\Taller de Lenguajes II\tl2-proyecto-2024-Daggam\obj\Debug\net8.0\tl2-proyecto-2024-Daggam.sourcelink.json
