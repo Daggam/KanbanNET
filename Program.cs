@@ -3,6 +3,7 @@ using tl2_proyecto_2024_Daggam.Repositorios;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDataProtection(); //En produccion agregar donde se almacenarán las keys.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IRepositorioUsuarios,RepositorioUsuarios>();
 var app = builder.Build();

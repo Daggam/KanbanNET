@@ -1,8 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "6IQpGxdew0R++NhSQbnRR2n0AW49di/weMLjiZLpSzCdLdjlqGpgy7AblHe5xHJi6CGFKY+q9KQiEhbGFqlBmA==",
+  "dgSpecHash": "gH0u35iA1Nb9lSCg/Mb7MhCysnDyU8lR8CA8Jk1Bsy44CF2i7vB+lm+pndIKOOKoo0YCPfUlJw7fQ5xyjK5lPQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Admin\\Desktop\\Facultad\\3 - TERCER ANIO\\SEGUNDO CUATRIMESTRE\\Taller de Lenguajes II\\tl2-proyecto-2024-Daggam\\tl2-proyecto-2024-Daggam.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.data.sqlite\\9.0.0\\microsoft.data.sqlite.9.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.data.sqlite.core\\9.0.0\\microsoft.data.sqlite.core.9.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.10\\sqlitepclraw.bundle_e_sqlite3.2.1.10.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\sqlitepclraw.core\\2.1.10\\sqlitepclraw.core.2.1.10.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.10\\sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.10\\sqlitepclraw.provider.e_sqlite3.2.1.10.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512"
+  ],
   "logs": []
 }
