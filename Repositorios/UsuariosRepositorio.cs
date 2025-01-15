@@ -5,6 +5,8 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
     public interface IRepositorioUsuarios{
         void Crear(Usuario usuario);
         IEnumerable<Usuario> ObtenerUsuarios();
+        Usuario? ObtenerUsuario(int id);
+        void Actualizar(Usuario usuario);
     
     }
 
@@ -50,5 +52,47 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
                 return usuarios.AsEnumerable();
             }
         }
+    
+        public Usuario? ObtenerUsuario(int id){
+            //Podemos o no podemos obtener un usuario
+            //En caso de no obtener uno, retornar null, por lo que mi vista retornaria a un home,NoEncontrado que me indica que el recurso que busco no existe.
+            using(var connection = new SqliteConnection(connectionString)){
+                connection.Open();
+                var command = connection.CreateCommand();
+                Usuario? usuario=null;
+                command.CommandText = "SELECT * FROM Usuario WHERE id=@id";
+                command.Parameters.AddWithValue("@id",id);
+                using(var reader=command.ExecuteReader()){
+                    while(reader.Read()){
+                        usuario = new Usuario(){
+                            Id=id,
+                            NombreDeUsuario = reader.GetString(1),
+                            Password = reader.GetString(2),
+                            RolUsuario = (RolUsuario) reader.GetInt16(3)
+                        };   
+                    }
+                }
+                connection.Close();
+                return usuario;
+            }
+        }
+
+        public void Actualizar(Usuario usuario){
+            using(var connection= new SqliteConnection(connectionString)){
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"UPDATE Usuario SET nombre_de_usuario=@Username, password=@Password, rolusuario=@Rol
+                                        WHERE id=@Id;";
+                command.Parameters.AddRange([
+                    new SqliteParameter("@Id",usuario.Id),
+                    new SqliteParameter("@Username",usuario.NombreDeUsuario),
+                    new SqliteParameter("@Password",usuario.Password),
+                    new SqliteParameter("@Rol",(int)usuario.RolUsuario) 
+                ]);
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+    
     }
 }

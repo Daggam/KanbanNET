@@ -1,0 +1,31 @@
+@model tl2_proyecto_2024_Daggam.ViewModels.ModificarUsuarioViewModel
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Crear Usuario</h1>
+</div>
+<form asp-action="Editar">
+    <input type="hidden" asp-for="Id">
+    <div class="mb-3">
+        <label asp-for="NombreDeUsuario" class="form-label"></label>
+        <input asp-for="NombreDeUsuario" class="form-control">
+        <span asp-validation-for="NombreDeUsuario" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control">
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="RolUsuario" class="form-label"></label>
+        <select asp-for="RolUsuario" asp-items="Html.GetEnumSelectList<RolUsuario>()" class="form-control"></select>
+    </div>
+    <button type="submit" class="btn btn-success">Editar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial"/>
+}

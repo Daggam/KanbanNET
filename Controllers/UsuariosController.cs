@@ -41,4 +41,35 @@ public class UsuariosController:Controller{
         repositorioUsuarios.Crear(usuario);
         return RedirectToAction("Index");
     }
+
+    public IActionResult Editar(int id){
+        var usuario = repositorioUsuarios.ObtenerUsuario(id);
+        if(usuario is null){
+            return RedirectToAction("Index"); // Cambiar a una vista de error.
+        }
+        
+        ModificarUsuarioViewModel usuariovm = new ModificarUsuarioViewModel(){
+            Id=id,
+            NombreDeUsuario = usuario.NombreDeUsuario,
+            Password = "",
+            RolUsuario = usuario.RolUsuario
+        };
+        return View(usuariovm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Editar(int id,ModificarUsuarioViewModel usuariovm){
+        if(!ModelState.IsValid){
+            return View(usuariovm);
+        }
+        Usuario usuario = new Usuario(){
+            Id = usuariovm.Id,
+            NombreDeUsuario = usuariovm.NombreDeUsuario,
+            Password = protector.Protect(usuariovm.Password),
+            RolUsuario = usuariovm.RolUsuario
+        };
+        repositorioUsuarios.Actualizar(usuario);
+        return RedirectToAction("Index");
+    }
 };
