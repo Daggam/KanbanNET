@@ -11,23 +11,27 @@
 <table class="table">
     <thead>
         <tr>
-            <th></th>
             <th>Nombre de usuario</th>
             <th>Rol</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach(var usuario in Model){
             <tr>
                 <td>
-                    <a asp-action="Editar"asp-route-id="@usuario.Id" class="btn btn-primary">Editar</a>
-                    <a asp-action="Borrar"asp-route-id="@usuario.Id" class="btn btn-danger">Borrar</a>
-                </td>
-                <td>
                     @usuario.NombreDeUsuario
                 </td>
                 <td>
                     @usuario.RolUsuario.ToString()
+                </td>
+                <td>
+                    <div class="d-flex justify-content-evenly my-auto">
+                    <a asp-action="Editar"asp-route-id="@usuario.Id" class="btn btn-primary">Editar</a>
+                    <form method="post">
+                        <button asp-action="Borrar" asp-route-id="@usuario.Id" onclick="return confirm('¿Esta seguro que desea eliminar este usuario?');" class="btn btn-danger">Borrar</button>
+                    </form>
+                    </div>
                 </td>
             </tr>
         }

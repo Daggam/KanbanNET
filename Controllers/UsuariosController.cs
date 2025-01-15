@@ -59,7 +59,7 @@ public class UsuariosController:Controller{
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Editar(int id,ModificarUsuarioViewModel usuariovm){
+    public IActionResult Editar(ModificarUsuarioViewModel usuariovm){
         if(!ModelState.IsValid){
             return View(usuariovm);
         }
@@ -70,6 +70,14 @@ public class UsuariosController:Controller{
             RolUsuario = usuariovm.RolUsuario
         };
         repositorioUsuarios.Actualizar(usuario);
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Borrar(int id){
+        //Validar
+        repositorioUsuarios.Borrar(id);
         return RedirectToAction("Index");
     }
 };

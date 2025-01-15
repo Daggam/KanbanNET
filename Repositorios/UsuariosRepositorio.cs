@@ -7,7 +7,7 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
         IEnumerable<Usuario> ObtenerUsuarios();
         Usuario? ObtenerUsuario(int id);
         void Actualizar(Usuario usuario);
-    
+        void Borrar(int id);
     }
 
     public class RepositorioUsuarios:IRepositorioUsuarios{
@@ -93,6 +93,16 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
                 connection.Close();
             }
         }
-    
+
+        public void Borrar(int id){
+            using(var connection = new SqliteConnection(connectionString)){
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Usuario WHERE id = @Id";
+                command.Parameters.AddWithValue("@Id",id);
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
     }
 }
