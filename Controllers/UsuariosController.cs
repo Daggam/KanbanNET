@@ -15,6 +15,9 @@ public class UsuariosController:Controller{
     }
     //Lista los usuarios
     public IActionResult Index(){
+        //Usuario no autorizado
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
+
         var usuarios = repositorioUsuarios.ObtenerUsuarios();
         IEnumerable<ListarUsuarioViewModel> usuariosvm = usuarios.Select(u => 
                                                             new ListarUsuarioViewModel(){

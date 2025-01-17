@@ -1,7 +1,32 @@
+@model tl2_proyecto_2024_Daggam.ViewModels.LoginViewModel
 @{
     ViewData["Title"] = "Login";
 }
+@if(ViewData.ModelState.ContainsKey("UsuarioInvalido")){
+    <span class="text-danger mb-3">@ViewData.ModelState["UsuarioInvalido"]!.Errors[0].ErrorMessage</span>
+}
+<div class="d-flex justify-content-center align-items-center bg-primary" style="height: 100vh;">
+    <div class="card border-dark" style="width:18rem;">
+            <h5 class="card-header text-center">Iniciar sesión</h5>
+            <div class="card-body">
+                <form asp-action="Index">
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label"></label>
+                        <input asp-for="Username" class="form-control">
+                        <span asp-validation-for="Username" class="text-danger"></span>
 
-<div class="text-center">
-    <h1 class="display-4">Login</h1>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control">
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ingresar</button>
+                </form>
+        </div>
+    </div>
 </div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial"/>
+}

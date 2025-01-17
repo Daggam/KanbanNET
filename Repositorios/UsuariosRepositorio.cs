@@ -6,8 +6,10 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
         void Crear(Usuario usuario);
         IEnumerable<Usuario> ObtenerUsuarios();
         Usuario? ObtenerUsuario(int id);
+        Usuario? ObtenerUsuario(String username);
         void Actualizar(Usuario usuario);
         void Borrar(int id);
+        bool Existe(string Username, string Password);
     }
 
     public class RepositorioUsuarios:IRepositorioUsuarios{
@@ -77,6 +79,27 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
             }
         }
 
+        public Usuario? ObtenerUsuario(string username){
+            using(var connection = new SqliteConnection(connectionString)){
+                connection.Open();
+                Usuario? usuario = null;
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM Usuario WHERE nombre_de_usuario=@Username";
+                command.Parameters.AddWithValue("@Username",username);
+                using(var reader = command.ExecuteReader()){
+                    while(reader.Read()){
+                        usuario = new Usuario(){
+                            Id = reader.GetInt32(0),
+                            NombreDeUsuario = reader.GetString(1),
+                            Password = reader.GetString(2),
+                            RolUsuario = (RolUsuario) reader.GetInt16(3)
+                        };
+                    }
+                }
+                connection.Close();
+                return usuario;
+            }
+        }
         public void Actualizar(Usuario usuario){
             using(var connection= new SqliteConnection(connectionString)){
                 connection.Open();
@@ -104,5 +127,22 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
                 connection.Close();
             }
         }
+
+        public bool Existe(string Username, string Password){
+            using(var connection = new SqliteConnection(connectionString)){
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT 1 FROM Usuario WHERE nombre_de_usuario=@Username AND password=@Password";
+                command.Parameters.AddRange([
+                    new SqliteParameter("@Username",Username),
+                    new SqliteParameter("@Password",Password) 
+                ]);
+                var response = command.ExecuteScalar();
+                connection.Close();
+                return response is not null;
+            }
+        }
+    
     }
+
 }
