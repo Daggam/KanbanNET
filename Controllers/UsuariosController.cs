@@ -16,7 +16,7 @@ public class UsuariosController:Controller{
     //Lista los usuarios
     public IActionResult Index(){
         //Usuario no autorizado
-        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
 
         var usuarios = repositorioUsuarios.ObtenerUsuarios();
         IEnumerable<ListarUsuarioViewModel> usuariosvm = usuarios.Select(u => 
@@ -28,11 +28,13 @@ public class UsuariosController:Controller{
         return View(usuariosvm);
     }
     public IActionResult Crear(){
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
         var modelo = new CrearUsuarioViewModel();
         return View(modelo);
     }
     [HttpPost]
     public IActionResult Crear(CrearUsuarioViewModel usuariovm){
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
         if(!ModelState.IsValid){
             return View(usuariovm);
         }
@@ -46,6 +48,8 @@ public class UsuariosController:Controller{
     }
 
     public IActionResult Editar(int id){
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
+
         var usuario = repositorioUsuarios.ObtenerUsuario(id);
         if(usuario is null){
             return RedirectToAction("Index"); // Cambiar a una vista de error.
@@ -63,6 +67,8 @@ public class UsuariosController:Controller{
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Editar(ModificarUsuarioViewModel usuariovm){
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
+
         if(!ModelState.IsValid){
             return View(usuariovm);
         }
@@ -79,6 +85,8 @@ public class UsuariosController:Controller{
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Borrar(int id){
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
+
         //Validar
         repositorioUsuarios.Borrar(id);
         return RedirectToAction("Index");

@@ -2,14 +2,14 @@
 @{
     ViewData["Title"] = "Login";
 }
-@if(ViewData.ModelState.ContainsKey("UsuarioInvalido")){
-    <span class="text-danger mb-3">@ViewData.ModelState["UsuarioInvalido"]!.Errors[0].ErrorMessage</span>
-}
 <div class="d-flex justify-content-center align-items-center bg-primary" style="height: 100vh;">
     <div class="card border-dark" style="width:18rem;">
             <h5 class="card-header text-center">Iniciar sesión</h5>
             <div class="card-body">
                 <form asp-action="Index">
+                    @if(ViewData.ModelState.ContainsKey("UsuarioInvalido")){
+                        <span class="d-block text-danger mb-3">@ViewData.ModelState["UsuarioInvalido"]!.Errors[0].ErrorMessage</span>
+                    }
                     <div class="mb-3">
                         <label asp-for="Username" class="form-label"></label>
                         <input asp-for="Username" class="form-control">
