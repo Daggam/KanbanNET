@@ -8,6 +8,7 @@ builder.Services.AddDataProtection(o =>{
 }); //En produccion agregar donde se almacenarán las keys.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IRepositorioUsuarios,RepositorioUsuarios>();
+builder.Services.AddTransient<IRepositorioTableros,RepositorioTablero>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
