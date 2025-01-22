@@ -15,6 +15,7 @@ public class TablerosController:Controller{
     }
 
     public IActionResult Index(){
+        //Esto se podría mejorar para checar si existe desde la base de datos el usuario pq la sesion no la tiene en cuenta. (Podria pasar que el sistema al ser usado por varios usuarios, en uno de esos usos, un administrador borre de la BD a un usuario que este utilizando esto )
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null){
             return RedirectToAction("Index","Login");
@@ -53,8 +54,48 @@ public class TablerosController:Controller{
         repositorioTableros.Crear(tablero);
         return RedirectToAction("Index");
     }
-    public IActionResult Editar(){
-        return View();
+    public IActionResult Editar(int id){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if(usuarioId is null){
+            return RedirectToAction("Index","Login");
+        }
+        var tablero = repositorioTableros.ObtenerTablero(id); 
+        //Tablero no existe o no le pertenece al usuario
+        if(tablero is null || tablero.IdUsuarioPropietario != usuarioId){
+            return RedirectToAction("RecursoInvalido","Home");
+        }
+        var modelo = new ModificarTableroViewModel(){
+            Id = tablero.Id,
+            Nombre = tablero.Nombre,
+            Descripcion = tablero.Descripcion
+        };
+        return View(modelo);
+    }
+
+    [HttpPost]
+    public IActionResult Editar(ModificarTableroViewModel modelo){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if(usuarioId is null){
+            return RedirectToAction("Index","Login");
+        }
+        //Podria cambiarlo por un metodo como Pertenece(tableroId,usuarioId) que me retorne un true cuando le corresponda el tableroId al usuarioId
+        var tablero = repositorioTableros.ObtenerTablero(modelo.Id); 
+        //Tablero no existe o no le pertenece al usuario
+        if(tablero is null || tablero.IdUsuarioPropietario != usuarioId){
+            return RedirectToAction("RecursoInvalido","Home");
+        }
+        if(!ModelState.IsValid){
+            return View(modelo);
+        }
+
+        var nuevoTablero = new Tablero(){
+            Id = modelo.Id,
+            IdUsuarioPropietario = (int)usuarioId,
+            Nombre = modelo.Nombre,
+            Descripcion = modelo.Descripcion ?? ""
+        };
+        repositorioTableros.Actualizar(nuevoTablero);
+        return RedirectToAction("Index");
     }
     public IActionResult Borrar(){
         return RedirectToAction("Index");   

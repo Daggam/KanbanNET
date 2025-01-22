@@ -15,9 +15,10 @@ public class UsuariosController:Controller{
     }
     //Lista los usuarios
     public IActionResult Index(){
+        if(HttpContext.Session.GetInt32("usuarioId") is null) return RedirectToAction("Index","Login");
         //Usuario no autorizado
-        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
-
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
+    
         var usuarios = repositorioUsuarios.ObtenerUsuarios();
         IEnumerable<ListarUsuarioViewModel> usuariosvm = usuarios.Select(u => 
                                                             new ListarUsuarioViewModel(){
@@ -28,13 +29,17 @@ public class UsuariosController:Controller{
         return View(usuariosvm);
     }
     public IActionResult Crear(){
-        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
+        if(HttpContext.Session.GetInt32("usuarioId") is null) return RedirectToAction("Index","Login");
+
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
         var modelo = new CrearUsuarioViewModel();
         return View(modelo);
     }
     [HttpPost]
     public IActionResult Crear(CrearUsuarioViewModel usuariovm){
-        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
+        if(HttpContext.Session.GetInt32("usuarioId") is null) return RedirectToAction("Index","Login");
+
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
         if(!ModelState.IsValid){
             return View(usuariovm);
         }
@@ -48,7 +53,9 @@ public class UsuariosController:Controller{
     }
 
     public IActionResult Editar(int id){
-        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
+        if(HttpContext.Session.GetInt32("usuarioId") is null) return RedirectToAction("Index","Login");
+
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
 
         var usuario = repositorioUsuarios.ObtenerUsuario(id);
         if(usuario is null){
@@ -67,7 +74,9 @@ public class UsuariosController:Controller{
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Editar(ModificarUsuarioViewModel usuariovm){
-        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
+        if(HttpContext.Session.GetInt32("usuarioId") is null) return RedirectToAction("Index","Login");
+
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
 
         if(!ModelState.IsValid){
             return View(usuariovm);
@@ -85,7 +94,9 @@ public class UsuariosController:Controller{
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Borrar(int id){
-        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Login");
+        if(HttpContext.Session.GetInt32("usuarioId") is null) return RedirectToAction("Index","Login");
+
+        if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
 
         //Validar
         repositorioUsuarios.Borrar(id);
