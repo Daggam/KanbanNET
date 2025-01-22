@@ -5,7 +5,7 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
 
     public interface IRepositorioTableros{
         void Crear(Tablero tablero);
-        IEnumerable<Tablero> ObtenerTableros();
+        IEnumerable<Tablero> ObtenerTableros(int userId);
         Tablero? ObtenerTablero(int id);
 
         void Actualizar(Tablero tablero);
@@ -35,12 +35,13 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
                 connection.Close();
             }
         }
-        public IEnumerable<Tablero> ObtenerTableros(){
+        public IEnumerable<Tablero> ObtenerTableros(int userId){
             using(var connection = new SqliteConnection(connectionString)){
                 connection.Open();
                 ICollection<Tablero> tableros = new List<Tablero>();
                 var command = connection.CreateCommand();
-                command.CommandText = @"SELECT * FROM Tablero";
+                command.CommandText = @"SELECT * FROM Tablero WHERE id_usuario_propietario = @UsuarioId";
+                command.Parameters.AddWithValue("@UsuarioId",userId);
                 using(var reader = command.ExecuteReader()){
                     while(reader.Read()){
                         tableros.Add(new Tablero(){

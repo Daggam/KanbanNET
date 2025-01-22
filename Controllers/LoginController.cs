@@ -27,6 +27,7 @@ public class LoginController:Controller{
             return View(loginvm);
         }
         HttpContext.Session.SetString("rol",usuario!.RolUsuario.ToString().ToLower());
+        HttpContext.Session.SetInt32("usuarioId",usuario.Id);        
         return RedirectToAction("Index","Home");
     }
 
