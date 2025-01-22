@@ -9,6 +9,7 @@ builder.Services.AddDataProtection(o =>{
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IRepositorioUsuarios,RepositorioUsuarios>();
 builder.Services.AddTransient<IRepositorioTableros,RepositorioTablero>();
+builder.Services.AddTransient<IRepositorioTareas,RepositorioTareas>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

@@ -16,11 +16,12 @@ public class TablerosController:Controller{
 
     public IActionResult Index(){
         //Esto se podría mejorar para checar si existe desde la base de datos el usuario pq la sesion no la tiene en cuenta. (Podria pasar que el sistema al ser usado por varios usuarios, en uno de esos usos, un administrador borre de la BD a un usuario que este utilizando esto ) (Para eso son lo filtros)
+        //Cambiar: Debo mostrar los tableros los cuales tengo asignados tareas y los que cree.
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null){
             return RedirectToAction("Index","Login");
         }
-        var tableros = repositorioTableros.ObtenerTableros((int)usuarioId);
+        var tableros = repositorioTableros.ObtenerTableros();
         IEnumerable<ListarTableroViewModel> tablerosViewModel = tableros.Select( t => new ListarTableroViewModel(){
             Id = t.Id,
             Nombre = t.Nombre,
