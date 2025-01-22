@@ -98,7 +98,7 @@ public class UsuariosController:Controller{
 
         if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Home");
 
-        //Validar
+        //antes de eliminar el usuario válidar si existe el usuario
         repositorioUsuarios.Borrar(id);
         return RedirectToAction("Index");
     }

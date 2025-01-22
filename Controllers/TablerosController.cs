@@ -15,7 +15,7 @@ public class TablerosController:Controller{
     }
 
     public IActionResult Index(){
-        //Esto se podría mejorar para checar si existe desde la base de datos el usuario pq la sesion no la tiene en cuenta. (Podria pasar que el sistema al ser usado por varios usuarios, en uno de esos usos, un administrador borre de la BD a un usuario que este utilizando esto )
+        //Esto se podría mejorar para checar si existe desde la base de datos el usuario pq la sesion no la tiene en cuenta. (Podria pasar que el sistema al ser usado por varios usuarios, en uno de esos usos, un administrador borre de la BD a un usuario que este utilizando esto ) (Para eso son lo filtros)
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null){
             return RedirectToAction("Index","Login");
@@ -97,7 +97,16 @@ public class TablerosController:Controller{
         repositorioTableros.Actualizar(nuevoTablero);
         return RedirectToAction("Index");
     }
-    public IActionResult Borrar(){
+    [HttpPost]
+    public IActionResult Borrar(int id){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if(usuarioId is null){
+            return RedirectToAction("Index","Login");
+        }
+        var tablero = repositorioTableros.ObtenerTablero(id); 
+        if(tablero is not null && tablero.IdUsuarioPropietario == usuarioId){
+            repositorioTableros.Borrar(id);
+        }
         return RedirectToAction("Index");   
     }
 }
