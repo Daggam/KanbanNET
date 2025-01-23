@@ -9,6 +9,7 @@ public interface IRepositorioTareas{
     IEnumerable<Tarea> ObtenerTareasPorTablero(int tableroId);
     Tarea? ObtenerTarea(int id);
     void ActualizarEstado(Tarea tarea);
+    void Borrar(int id);
 }
 public class RepositorioTareas:IRepositorioTareas{
     
@@ -123,5 +124,16 @@ public class RepositorioTareas:IRepositorioTareas{
             connection.Close();
         }
     }
-
+    public void Borrar(int id){
+        using(var connection = new SqliteConnection(connectionString)){
+            connection.Open();
+            var command = connection.CreateCommand();
+            command.CommandText = @"DELETE FROM Tarea WHERE id=@Id";
+            command.Parameters.AddRange([
+                new SqliteParameter("@Id",id)
+            ]);
+            command.ExecuteNonQuery();
+            connection.Close();
+        }   
+    }
 }

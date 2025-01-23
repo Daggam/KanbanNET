@@ -84,6 +84,18 @@ public class TareasController:Controller{
         repositorioTareas.ActualizarEstado(tarea);
         return RedirectToAction("Index");
     }
+
+    [HttpPost]
+    public IActionResult Borrar(int id){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if(usuarioId is null) return RedirectToAction("Index","Login");
+        var tarea = repositorioTareas.ObtenerTarea(id);
+        if(!ModelState.IsValid || tarea is null){
+            return RedirectToAction("RecursoInvalido","Home");
+        }
+        repositorioTareas.Borrar(id);
+        return RedirectToAction("Index");
+    }
     private List<SelectListItem> TablerosAListItems(int usuarioId){
         return repositorioTableros.ObtenerTablerosPorUsuario(usuarioId)
                         .Select(t => new SelectListItem
