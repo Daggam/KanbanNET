@@ -20,6 +20,7 @@ public class LoginController:Controller{
     public IActionResult Index(LoginViewModel loginvm){
         var usuario = repositorioUsuarios.ObtenerUsuario(loginvm.Username);
         //El usuario no existe o la contraseña es incorrecta
+        //Cambiar esto por hashing
         if(usuario is null || protector.Unprotect(usuario.Password) != loginvm.Password){
             ModelState.AddModelError("UsuarioInvalido","El usuario y/o contraseña son incorrectos.");
         }
@@ -31,4 +32,9 @@ public class LoginController:Controller{
         return RedirectToAction("Index","Home");
     }
 
+    public IActionResult Logout(){
+        Response.Cookies.Delete("AuthCookie");
+        HttpContext.Session.Clear();
+        return RedirectToAction("Index");
+    }
 };

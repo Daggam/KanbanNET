@@ -14,6 +14,7 @@ builder.Services.AddTransient<IRepositorioTareas,RepositorioTareas>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
+    options.Cookie.Name="AuthCookie";
     options.IdleTimeout = TimeSpan.FromHours(3);
     options.Cookie.HttpOnly=true;
     options.Cookie.IsEssential=true;

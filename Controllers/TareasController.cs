@@ -20,6 +20,7 @@ public class TareasController:Controller{
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if( usuarioId is null ) return RedirectToAction("Index","Login");
         var tareas = repositorioTareas.ObtenerTareasPorUsuario((int)usuarioId);
+        // Listar todas las tareas asignadas a este usuario y las creadas por el?
         // var modelo = tareas.Select( t => new )
         return View();
     }

@@ -1,5 +1,6 @@
 ﻿@{
-    var sessionValue = Context.Session.GetString("rol");
+    var usuarioId = Context.Session.GetString("usuarioId");
+    var usuarioRol = Context.Session.GetString("rol");
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -10,14 +11,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/tl2_proyecto_2024_Daggam.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
     <header>
-        @if(sessionValue == "operador"){
-            <p>Soy operador</p>
-        }else if(sessionValue=="administrador"){
-            <p>Soy admin je</p>
-        }
 @*         
          <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
             <div class="container-fluid">
@@ -38,30 +35,33 @@
                 </div>
             </div>
         </nav>  *@
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Kanban</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Tablero</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">Usuarios</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">Cerrar Sesión</a>
-                    </li>
-                </ul>
+    @if(usuarioId is not null){
+        <nav class="navbar navbar-expand-md navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand abs" href="#"><i style="font-size:40px;"class="bi bi-kanban-fill"></i></a>
+                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse" id="collapseNavbar">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Tableros" asp-action="Index">Mis tableros</a>
+                        </li>
+                        @if(usuarioRol=="administrador"){
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Panel de usuarios</a>
+                        </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Login" asp-action="Logout">Cerrar Sesión</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    }
     </header>
     <div class="">
         <main role="main">
