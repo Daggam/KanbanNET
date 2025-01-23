@@ -21,7 +21,7 @@ public class TablerosController:Controller{
         if(usuarioId is null){
             return RedirectToAction("Index","Login");
         }
-        var tableros = repositorioTableros.ObtenerTableros();
+        var tableros = repositorioTableros.ListarTableros((int)usuarioId);
         IEnumerable<ListarTableroViewModel> tablerosViewModel = tableros.Select( t => new ListarTableroViewModel(){
             Id = t.Id,
             Nombre = t.Nombre,

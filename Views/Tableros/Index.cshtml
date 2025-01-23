@@ -2,7 +2,42 @@
 @{
     ViewData["Title"] = "Mis Tableros";
 }
-<h1>Mis Tableros</h1>
+<div class="min-vh-100 d-flex flex-column">
+    <div class="text-center mt-4">
+        <h1>Mis Tableros</h1>
+        <hr>
+        <h6>Aquí se mostraran los tableros que has creado o los cuales tienes tareas asignadas.</h6>
+    </div>
+        @if(Model.Count() == 0){
+            <div class="d-flex justify-content-center align-items-center flex-grow-1">
+                <p class="h6" style="color:gray">No hay ningún tablero...</p>
+            </div>
+        }else{
+             <div class="container-fluid pt-4">
+             <div class="row row-cols-5">
+                    @foreach(var tablero in Model){
+                    <div class="col">
+                        <div class="card h-100">
+                        <div class="card-header">@tablero.Nombre</div>
+                            <div class="card-body">
+                                <p class="card-text">@((tablero.Descripcion==string.Empty) ? "No hay descripción.":tablero.Descripcion)</p>
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="Editar"asp-route-id="@tablero.Id" class="btn btn-primary">Editar</a>
+                                    <form method="post">
+                                        <button asp-action="Borrar" asp-route-id="@tablero.Id" onclick="return confirm('¿Esta seguro que desea eliminar este tablero?');" class="btn btn-danger">Borrar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                    }
+                </div>
+            </div>
+        }
+
+</div> 
+
+@* <h1>Mis Tableros</h1>
 <h5>Crea, edita y borra tus tableros</h5>
 <a asp-action="Crear" class="btn btn-primary">Crear Tablero</a>
 <table class="table">
@@ -33,4 +68,4 @@
             </tr>
         }
     </tbody>
-</table>
+</table> *@

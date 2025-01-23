@@ -7,6 +7,7 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
         void Crear(Tablero tablero);
         IEnumerable<Tablero> ObtenerTableros();
         IEnumerable<Tablero> ObtenerTablerosPorUsuario(int usuarioId);
+        IEnumerable<Tablero> ListarTableros(int usuarioId);
         Tablero? ObtenerTablero(int id);
 
 
@@ -57,12 +58,36 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
                 return tableros.AsEnumerable();
             }
         }
+        public IEnumerable<Tablero> ListarTableros(int usuarioId){
+            using(var connection = new SqliteConnection(connectionString)){
+                connection.Open();
+                ICollection<Tablero> tableros = new List<Tablero>();
+                var command = connection.CreateCommand();
+                command.CommandText = @"SELECT Tablero.id, id_usuario_propietario,Tablero.nombre,Tablero.descripcion FROM Tablero
+                                        LEFT JOIN Tarea ON Tablero.id = Tarea.id_tablero
+                                        WHERE id_usuario_propietario=@UsuarioId OR id_usuario_asignado=@UsuarioId
+                                        GROUP BY Tablero.id;";
+                command.Parameters.AddWithValue("@UsuarioId",usuarioId);
+                using(var reader = command.ExecuteReader()){
+                    while(reader.Read()){
+                        tableros.Add(new Tablero(){
+                            Id = reader.GetInt32(0),
+                            IdUsuarioPropietario = reader.GetInt32(1),
+                            Nombre=reader.GetString(2),
+                            Descripcion=reader.GetString(3)
+                        });
+                    }
+                }
+                connection.Close();
+                return tableros.AsEnumerable();
+            }
+        }
         public IEnumerable<Tablero> ObtenerTablerosPorUsuario(int usuarioId){
             using(var connection = new SqliteConnection(connectionString)){
                 connection.Open();
                 ICollection<Tablero> tableros = new List<Tablero>();
                 var command = connection.CreateCommand();
-                command.CommandText = @"SELECT * FROM Tablero WHERE id_usuario_propietario = @UsuarioId";
+                command.CommandText = @"SELECT * FROM Tablero WHERE id_usuario_propietario=@UsuarioId";
                 command.Parameters.AddWithValue("@UsuarioId",usuarioId);
                 using(var reader = command.ExecuteReader()){
                     while(reader.Read()){
