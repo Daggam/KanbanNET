@@ -3,22 +3,31 @@
     ViewData["Title"] = "Crear Tablero";
 }
 
-<h1>Crear Tablero</h1>
-
-<form asp-action="Editar">
-    <input type="hidden" asp-for="Id">
-    <div class="mb-3">
-        <label asp-for="Nombre" class="form-label"></label>
-        <input asp-for="Nombre" class="form-control">
-        <span asp-validation-for="Nombre" class="text-danger"></span>
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-5">
+            <div class="card shadow">
+                <div class="card-header"><h4 class="text-center">Editar tablero</h1></div>
+                <div class="card-body">
+                    <form asp-action="Editar">
+                        <input type="hidden" asp-for="Id">
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label"></label>
+                            <input asp-for="Nombre" class="form-control">
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Descripcion" class="form-label"></label>
+                            <input asp-for="Descripcion" class="form-control">
+                            <span asp-validation-for="Descripcion" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-success d-block ms-auto">Confirmar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="Descripcion" class="form-label"></label>
-        <input asp-for="Descripcion" class="form-control">
-        <span asp-validation-for="Descripcion" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Crear</button>
-</form>
+</div>
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial"/>
