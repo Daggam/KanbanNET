@@ -25,7 +25,8 @@ public class TablerosController:Controller{
         IEnumerable<ListarTableroViewModel> tablerosViewModel = tableros.Select( t => new ListarTableroViewModel(){
             Id = t.Id,
             Nombre = t.Nombre,
-            Descripcion = t.Descripcion
+            Descripcion = t.Descripcion,
+            IdUsuarioPropietario = t.IdUsuarioPropietario
         });
         return View(tablerosViewModel);
     }

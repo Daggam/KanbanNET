@@ -21,11 +21,17 @@
                         <div class="card-header">@tablero.Nombre</div>
                             <div class="card-body">
                                 <p class="card-text">@((tablero.Descripcion==string.Empty) ? "No hay descripción.":tablero.Descripcion)</p>
+
                                 <div class="d-flex justify-content-between">
-                                    <a asp-action="Editar"asp-route-id="@tablero.Id" class="btn btn-primary">Editar</a>
-                                    <form method="post">
-                                        <button asp-action="Borrar" asp-route-id="@tablero.Id" onclick="return confirm('¿Esta seguro que desea eliminar este tablero?');" class="btn btn-danger">Borrar</button>
-                                    </form>
+                                    @if(Context.Session.GetInt32("usuarioId") == tablero.IdUsuarioPropietario){
+                                        <a asp-action="Editar"asp-route-id="@tablero.Id" class="btn btn-primary">Editar</a>
+                                        <button type="submit" class="btn btn-success">Ver</button>
+                                        <form method="post">
+                                            <button asp-action="Borrar" asp-route-id="@tablero.Id" onclick="return confirm('¿Esta seguro que desea eliminar este tablero?');" class="btn btn-danger">Borrar</button>
+                                        </form>
+                                    }else{
+                                        <button type="submit" class="btn btn-success ms-auto">Ver</button>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -36,7 +42,6 @@
         }
 
 </div> 
-
 @* <h1>Mis Tableros</h1>
 <h5>Crea, edita y borra tus tableros</h5>
 <a asp-action="Crear" class="btn btn-primary">Crear Tablero</a>
