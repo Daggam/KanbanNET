@@ -1,0 +1,15 @@
+@model tl2_proyecto_2024_Daggam.ViewModels.ModificarTareaViewModel
+
+@{
+    ViewData["Title"] = "Modificar Tarea";
+}
+
+<h1>Modificar Tarea</h1>
+<form asp-action="Editar">
+    <div class="mb-3">
+        <input type="hidden" asp-for="Id">
+        <label asp-for="Estado" class="form-label"></label>
+        <select asp-for="Estado" asp-items="Html.GetEnumSelectList<EstadoTarea>()" class="form-control"></select>
+    </div>
+    <button type="submit" class="btn btn-success">Editar</button>
+</form>

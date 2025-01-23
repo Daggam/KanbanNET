@@ -6,7 +6,9 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
     public interface IRepositorioTableros{
         void Crear(Tablero tablero);
         IEnumerable<Tablero> ObtenerTableros();
+        IEnumerable<Tablero> ObtenerTablerosPorUsuario(int usuarioId);
         Tablero? ObtenerTablero(int id);
+
 
         void Actualizar(Tablero tablero);
 
@@ -41,6 +43,27 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
                 ICollection<Tablero> tableros = new List<Tablero>();
                 var command = connection.CreateCommand();
                 command.CommandText = @"SELECT * FROM Tablero";
+                using(var reader = command.ExecuteReader()){
+                    while(reader.Read()){
+                        tableros.Add(new Tablero(){
+                            Id = reader.GetInt32(0),
+                            IdUsuarioPropietario = reader.GetInt32(1),
+                            Nombre=reader.GetString(2),
+                            Descripcion=reader.GetString(3)
+                        });
+                    }
+                }
+                connection.Close();
+                return tableros.AsEnumerable();
+            }
+        }
+        public IEnumerable<Tablero> ObtenerTablerosPorUsuario(int usuarioId){
+            using(var connection = new SqliteConnection(connectionString)){
+                connection.Open();
+                ICollection<Tablero> tableros = new List<Tablero>();
+                var command = connection.CreateCommand();
+                command.CommandText = @"SELECT * FROM Tablero WHERE id_usuario_propietario = @UsuarioId";
+                command.Parameters.AddWithValue("@UsuarioId",usuarioId);
                 using(var reader = command.ExecuteReader()){
                     while(reader.Read()){
                         tableros.Add(new Tablero(){

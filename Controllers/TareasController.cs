@@ -17,7 +17,10 @@ public class TareasController:Controller{
         this.repositorioTareas = repositorioTareas;
     }
     public IActionResult Index(){
-        if(HttpContext.Session.GetInt32("usuarioId") is null ) return RedirectToAction("Index","Login");
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if( usuarioId is null ) return RedirectToAction("Index","Login");
+        var tareas = repositorioTareas.ObtenerTareasPorUsuario((int)usuarioId);
+        // var modelo = tareas.Select( t => new )
         return View();
     }
 
@@ -25,25 +28,21 @@ public class TareasController:Controller{
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null) return RedirectToAction("Index","Login");
         var modelo = new CrearTareaViewModel();
-        modelo.Tableros = repositorioTableros.ObtenerTableros()
-                        .Where( t => t.IdUsuarioPropietario == usuarioId)
-                        .Select(t => new SelectListItem
-                                    {
-                                        Value = t.Id.ToString(),
-                                        Text = t.Nombre
-                                    }).ToList();
-        
+        modelo.Tableros = TablerosAListItems((int)usuarioId);
         return View(modelo);
     }
     [HttpPost]
-    public IActionResult Crear([FromForm] CrearTareaViewModel modelo){
+    public IActionResult Crear(CrearTareaViewModel modelo){
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null) return RedirectToAction("Index","Login");   
         //Corroboramos si el tablero elegido existe y le pertenece, ademas si el usuario elegido existe. No podemos confiar en el front. Mejorariamos si tuviesemos operaciones existe en el repositorio. Si esto pasa incluso podríamos agregar un error.
         var tablero = repositorioTableros.ObtenerTablero(modelo.IdTablero);
         bool res = tablero is not null && tablero.IdUsuarioPropietario == usuarioId && 
                   repositorioUsuarios.ObtenerUsuario(modelo.IdUsuarioAsignado) is not null;
-        if(!ModelState.IsValid || !res) return View(modelo);
+        if(!ModelState.IsValid || !res){ 
+            modelo.Tableros = TablerosAListItems((int)usuarioId);
+            return View(modelo);
+        }
         var tarea = new Tarea(){
             Nombre = modelo.Nombre,
             Descripcion = modelo.Descripcion ?? "",
@@ -54,5 +53,43 @@ public class TareasController:Controller{
         };
         repositorioTareas.Crear(tarea);
         return RedirectToAction("Index");
+    }
+
+    
+    public IActionResult Editar(int id){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if(usuarioId is null) return RedirectToAction("Index","Login");
+        var tarea = repositorioTareas.ObtenerTarea(id);
+        if(tarea==null){
+            return RedirectToAction("RecursoInvalido","Home");
+        }
+        var modelo = new ModificarTareaViewModel(){
+            Id = tarea.Id,
+            Estado = tarea.Estado
+        };
+        return View(modelo);
+    }
+    [HttpPost]
+    public IActionResult Editar(ModificarTareaViewModel modelo){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if(usuarioId is null) return RedirectToAction("Index","Login");
+        var tarea = repositorioTareas.ObtenerTarea(modelo.Id);
+        //El id de la tarea esta alterado (la tarea no existe)
+        //Ya de por si le pertenece al usuario y al tablero(No hay nada en el front que permita cambiarlo)
+        if(!ModelState.IsValid || tarea is null){
+            return View(modelo);
+        }
+
+        tarea.Estado = modelo.Estado;
+        repositorioTareas.ActualizarEstado(tarea);
+        return RedirectToAction("Index");
+    }
+    private List<SelectListItem> TablerosAListItems(int usuarioId){
+        return repositorioTableros.ObtenerTablerosPorUsuario(usuarioId)
+                        .Select(t => new SelectListItem
+                                    {
+                                        Value = t.Id.ToString(),
+                                        Text = t.Nombre
+                                    }).ToList();
     }
 }
