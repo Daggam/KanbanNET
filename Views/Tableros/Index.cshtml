@@ -20,16 +20,14 @@
                     <div class="col">
                         <div class="card h-100">
                         <div class="card-header">@tablero.Nombre</div>
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column">
                                 <p class="card-text">@((tablero.Descripcion==string.Empty) ? "No hay descripción.":tablero.Descripcion)</p>
 
-                                <div class="d-flex justify-content-between">
+                                <div class="d-flex justify-content-between mt-auto">
                                     @if(Context.Session.GetInt32("usuarioId") == tablero.IdUsuarioPropietario){
                                         <a asp-action="Editar"asp-route-id="@tablero.Id" class="btn btn-primary">Editar</a>
                                         <button type="submit" class="btn btn-success">Ver</button>
-                                        <form method="post">
-                                            <button asp-action="Borrar" asp-route-id="@tablero.Id" onclick="return confirm('¿Esta seguro que desea eliminar este tablero?');" class="btn btn-danger">Borrar</button>
-                                        </form>
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#BorrarTablero" data-bs-routeId="@tablero.Id">Borrar</button>
                                     }else{
                                         <button type="submit" class="btn btn-success ms-auto">Ver</button>
                                     }
@@ -75,3 +73,33 @@
         }
     </tbody>
 </table> *@
+<!-- Modal -->
+<div class="modal fade" id="BorrarTablero" tabindex="-1" aria-labelledby="TableroBorrarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="TableroBorrarLabel">Confirmar acción</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            ¿Está seguro que desea eliminar este tablero?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <form method="post">
+                <button id="ConfirmarBorrado"type="submit" class="btn btn-success">Confirmar</button>
+            </form>
+        </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        const ruta = "@Url.Action("Borrar")/" 
+        $("#BorrarTablero").on("show.bs.modal", (e)=>{
+            const boton = e.relatedTarget
+            const atributo = boton.getAttribute("data-bs-routeId")
+           $("#ConfirmarBorrado").attr("formaction",ruta+atributo)
+        })
+    </script>
+}
