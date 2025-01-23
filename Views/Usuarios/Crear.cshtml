@@ -4,27 +4,34 @@
     ViewData["Title"] = "Crear Usuario";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Crear Usuario</h1>
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-5">
+            <div class="card shadow">
+                <div class="card-header"><h4 class="text-center">Crear Usuario</h1></div>
+                <div class="card-body">
+                    <form asp-action="Crear">
+                        <div class="mb-3">
+                            <label asp-for="NombreDeUsuario" class="form-label"></label>
+                            <input asp-for="NombreDeUsuario" class="form-control">
+                            <span asp-validation-for="NombreDeUsuario" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control">
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="RolUsuario" class="form-label"></label>
+                            <select asp-for="RolUsuario" asp-items="Html.GetEnumSelectList<RolUsuario>()" class="form-control"></select>
+                        </div>
+                        <button type="submit" class="btn btn-success d-block ms-auto mt-4">Crear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<form asp-action="Crear">
-    <div class="mb-3">
-        <label asp-for="NombreDeUsuario" class="form-label"></label>
-        <input asp-for="NombreDeUsuario" class="form-control">
-        <span asp-validation-for="NombreDeUsuario" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" class="form-control">
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="RolUsuario" class="form-label"></label>
-        <select asp-for="RolUsuario" asp-items="Html.GetEnumSelectList<RolUsuario>()" class="form-control"></select>
-    </div>
-    <button type="submit" class="btn btn-success">Crear</button>
-</form>
-
 @section Scripts{
     <partial name="_ValidationScriptsPartial"/>
 }

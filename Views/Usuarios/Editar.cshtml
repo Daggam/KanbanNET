@@ -3,29 +3,39 @@
     ViewData["Title"] = "Editar Usuario";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Crear Usuario</h1>
-</div>
-<form asp-action="Editar">
-    <input type="hidden" asp-for="Id">
-    <div class="mb-3">
-        <label asp-for="NombreDeUsuario" class="form-label"></label>
-        <input asp-for="NombreDeUsuario" class="form-control">
-        <span asp-validation-for="NombreDeUsuario" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" class="form-control">
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="RolUsuario" class="form-label"></label>
-        <select asp-for="RolUsuario" asp-items="Html.GetEnumSelectList<RolUsuario>()" class="form-control"></select>
-    </div>
-    <button type="submit" class="btn btn-success">Editar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-5">
+            <div class="card shadow">
+                <div class="card-header"><h4 class="text-center">Editar usuario</h1></div>
+                <div class="card-body">
+                    <form asp-action="Editar">
+                        <input type="hidden" asp-for="Id">
+                        <div class="mb-3">
+                            <label asp-for="NombreDeUsuario" class="form-label"></label>
+                            <input asp-for="NombreDeUsuario" class="form-control">
+                            <span asp-validation-for="NombreDeUsuario" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control">
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="RolUsuario" class="form-label"></label>
+                            <select asp-for="RolUsuario" asp-items="Html.GetEnumSelectList<RolUsuario>()" class="form-control"></select>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
 
+                            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success ms-auto">Aceptar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts{
     <partial name="_ValidationScriptsPartial"/>
 }
