@@ -1,3 +1,57 @@
+@model IEnumerable<tl2_proyecto_2024_Daggam.ViewModels.ListarTareaViewModel>
 @{
     ViewData["Title"] = "Mis Tareas";
+}
+
+<div class="text-center mt-4">
+    <h1>Mis Tareas</h1>
+    <hr>
+    @* Aquí iria un mensaje como: (no)tienes tareas *@
+    <h6>Aquí se mostraran los tableros que has creado o los cuales tienes tareas asignadas.</h6>
+    @* Si (no)sos el usuario que creo este tablero, (no)podes crear una tarea *@
+    <a asp-action="Crear" asp-route-idTablero="@Context.GetRouteValue("id")" class="btn btn-success my-3"> <i class="bi bi-plus-lg"></i> Crear Tarea</a>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h6 class="text-center mb-0 py-2 border border-dark rounded bg-dark text-light">Ideas</h6>
+            <div class="reordenable">
+                <div class="card mt-2" style="border-color: red;">
+                    <div class="card-body">
+                        <h5 class="card-title">Titulo Tarea</h5>
+                        <p class="card-text">Descripcion Tarea</p>
+                    </div>
+                </div>
+                <div class="card mt-2" style="border-color: red;">
+                    <div class="card-body">
+                        <h5 class="card-title">Titulo Tarea</h5>
+                        <p class="card-text">Descripcion Tarea</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">ToDo</h6>
+        </div>
+        <div class="col">
+            <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Doing</h6>
+        </div>
+        <div class="col">
+            <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Review</h6>
+            
+        </div>
+        <div class="col">
+            <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Done</h6>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $(()=>{
+            $(".reordenable").sortable({
+                items:".card",
+                cursor:"move"
+            })
+        })
+    </script>
 }

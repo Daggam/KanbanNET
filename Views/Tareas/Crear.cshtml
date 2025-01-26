@@ -3,7 +3,43 @@
     ViewData["Title"] = "Crear Tarea";
 }
 
-<h1>Crea una tarea</h1>
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-5">
+            <div class="card shadow">
+                <div class="card-header"><h4 class="text-center">Crear tarea</h1></div>
+                <div class="card-body">
+                    <form asp-action="Crear">
+                        <input type="hidden" asp-for="IdTablero">
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label"></label>
+                            <input asp-for="Nombre" class="form-control">
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Descripcion" class="form-label"></label>
+                            <input asp-for="Descripcion" class="form-control">
+                            <span asp-validation-for="Descripcion" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <label asp-for="Color" class="form-label m-0"></label>
+                            <input type="color" asp-for="Color" class="form-control form-control-color ms-3">
+                            <span asp-validation-for="Color" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="IdUsuarioAsignado" class="form-label"></label>
+                            <input asp-for="IdUsuarioAsignado" class="form-control">
+                            <span asp-validation-for="IdUsuarioAsignado" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-success">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <h1>Crea una tarea</h1>
 <h5>Asigna una tarea a un tablero</h5>
 
 <form asp-action="Crear">
@@ -35,7 +71,7 @@
         <span asp-validation-for="IdUsuarioAsignado" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-success">Enviar</button>
-</form>
+</form> *@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial"/>

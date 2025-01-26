@@ -26,10 +26,10 @@
                                 <div class="d-flex justify-content-between mt-auto">
                                     @if(Context.Session.GetInt32("usuarioId") == tablero.IdUsuarioPropietario){
                                         <a asp-action="Editar"asp-route-id="@tablero.Id" class="btn btn-primary">Editar</a>
-                                        <button type="submit" class="btn btn-success">Ver</button>
+                                        <a asp-controller="Tareas" asp-action="Index" asp-route-id="@tablero.Id" class="btn btn-success">Ver</a>
                                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#BorrarTablero" data-bs-routeId="@tablero.Id">Borrar</button>
                                     }else{
-                                        <button type="submit" class="btn btn-success ms-auto">Ver</button>
+                                        <button type="submit" asp-controller="Tarea" asp-action="Index" asp-route-id="@tablero.Id"  class="btn btn-success ms-auto">Ver</button>
                                     }
                                 </div>
                             </div>
@@ -41,38 +41,6 @@
         }
 
 </div> 
-@* <h1>Mis Tableros</h1>
-<h5>Crea, edita y borra tus tableros</h5>
-<a asp-action="Crear" class="btn btn-primary">Crear Tablero</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Descripcion</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(var tablero in Model){
-            <tr>
-                <td>
-                    @tablero.Nombre
-                </td>
-                <td>
-                    @tablero.Descripcion
-                </td>
-                <td>
-                    <div class="d-flex justify-content-evenly my-auto">
-                    <a asp-action="Editar"asp-route-id="@tablero.Id" class="btn btn-primary">Editar</a>
-                    <form method="post">
-                        <button asp-action="Borrar" asp-route-id="@tablero.Id" onclick="return confirm('¿Esta seguro que desea eliminar este tablero?');" class="btn btn-danger">Borrar</button>
-                    </form>
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table> *@
 <!-- Modal -->
 <div class="modal fade" id="BorrarTablero" tabindex="-1" aria-labelledby="TableroBorrarLabel" aria-hidden="true">
     <div class="modal-dialog">

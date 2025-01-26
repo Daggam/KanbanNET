@@ -16,32 +16,52 @@ public class TareasController:Controller{
         this.repositorioUsuarios = repositorioUsuarios;
         this.repositorioTareas = repositorioTareas;
     }
-    public IActionResult Index(){
+    public IActionResult Index(int? id){
+        //Mi idea es la siguiente: dado un tablero, dar todas las tareas relacionadas a este.
+        //Si no existe dicho tablero, retornar que no existe O podríamos tomar todas las tareas asignadas al usuario 
+        //int? => si no recibe ningún numero podríamos mostrar todas las tareas asignadas al usuario.
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if( usuarioId is null ) return RedirectToAction("Index","Login");
-        var tareas = repositorioTareas.ObtenerTareasPorUsuario((int)usuarioId);
-        // Listar todas las tareas asignadas a este usuario y las creadas por el?
-        // var modelo = tareas.Select( t => new )
-        return View();
+        if(id is null) return RedirectToAction("RecursoInvalido","Home");
+        var tablero = repositorioTableros.ObtenerTablero((int)id);
+        if(tablero is null) return RedirectToAction("RecursoInvalido","Home");
+        
+        var tareas = repositorioTareas.ObtenerTareasPorTablero((int)id);
+        var modelo = tareas.Select( t => new ListarTareaViewModel(){
+            Id = t.Id,
+            Nombre = t.Nombre,
+            Descripcion = t.Descripcion,
+            Color = t.Color,
+            Estado = t.Estado
+        });
+        return View(modelo);
     }
-
-    public IActionResult Crear(){
+    public IActionResult Crear(int? idTablero){
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null) return RedirectToAction("Index","Login");
-        var modelo = new CrearTareaViewModel();
-        modelo.Tableros = TablerosAListItems((int)usuarioId);
+        //Corroborar si el tablero existe o si tiene acceso a él.
+        if(idTablero is null) return RedirectToAction("RecursoInvalido","Home");
+        var tablero = repositorioTableros.ObtenerTablero((int)idTablero);
+        if(tablero is null || tablero.IdUsuarioPropietario != usuarioId ) return RedirectToAction("RecursoInvalido","Home");
+        var modelo = new CrearTareaViewModel(){
+            IdTablero = (int)idTablero
+        };
         return View(modelo);
     }
     [HttpPost]
     public IActionResult Crear(CrearTareaViewModel modelo){
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null) return RedirectToAction("Index","Login");   
-        //Corroboramos si el tablero elegido existe y le pertenece, ademas si el usuario elegido existe. No podemos confiar en el front. Mejorariamos si tuviesemos operaciones existe en el repositorio. Si esto pasa incluso podríamos agregar un error.
+        //Corroboar si el tablero existe, si el usuario de la sesion es propietario del tablero y si el usuario al cual asignamos la tarea existe
         var tablero = repositorioTableros.ObtenerTablero(modelo.IdTablero);
-        bool res = tablero is not null && tablero.IdUsuarioPropietario == usuarioId && 
-                  repositorioUsuarios.ObtenerUsuario(modelo.IdUsuarioAsignado) is not null;
-        if(!ModelState.IsValid || !res){ 
-            modelo.Tableros = TablerosAListItems((int)usuarioId);
+        bool resTablero = tablero is not null && tablero.IdUsuarioPropietario == usuarioId;
+        bool resUsuario = repositorioUsuarios.ObtenerUsuario(modelo.IdUsuarioAsignado) is not null;
+        if(!resTablero){
+            //Podríamos mostrar un error.
+            return RedirectToAction("RecursoInvalido","Home");
+        }
+        if(!ModelState.IsValid || !resUsuario){ 
+            //Podemos mostrar un error.
             return View(modelo);
         }
         var tarea = new Tarea(){
@@ -53,7 +73,7 @@ public class TareasController:Controller{
             Estado = EstadoTarea.Ideas
         };
         repositorioTareas.Crear(tarea);
-        return RedirectToAction("Index");
+        return RedirectToAction("Index",new {id=modelo.IdTablero});
     }
 
     
@@ -96,13 +116,5 @@ public class TareasController:Controller{
         }
         repositorioTareas.Borrar(id);
         return RedirectToAction("Index");
-    }
-    private List<SelectListItem> TablerosAListItems(int usuarioId){
-        return repositorioTableros.ObtenerTablerosPorUsuario(usuarioId)
-                        .Select(t => new SelectListItem
-                                    {
-                                        Value = t.Id.ToString(),
-                                        Text = t.Nombre
-                                    }).ToList();
     }
 }
