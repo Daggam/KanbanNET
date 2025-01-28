@@ -1,57 +1,120 @@
-@model IEnumerable<tl2_proyecto_2024_Daggam.ViewModels.ListarTareaViewModel>
+@model tl2_proyecto_2024_Daggam.ViewModels.PaqueteListarViewModel
 @{
     ViewData["Title"] = "Mis Tareas";
+    var PaqueteJSON = Json.Serialize(Model);
 }
 
 <div class="text-center mt-4">
     <h1>Mis Tareas</h1>
     <hr>
-    @* Aquí iria un mensaje como: (no)tienes tareas *@
     <h6>Aquí se mostraran los tableros que has creado o los cuales tienes tareas asignadas.</h6>
     @* Si (no)sos el usuario que creo este tablero, (no)podes crear una tarea *@
-    <a asp-action="Crear" asp-route-idTablero="@Context.GetRouteValue("id")" class="btn btn-success my-3"> <i class="bi bi-plus-lg"></i> Crear Tarea</a>
+    @if(Model.EsPropietario){
+        <a asp-action="Crear" asp-route-idTablero="@Context.GetRouteValue("id")" class="btn btn-success my-3"> <i class="bi bi-plus-lg"></i> Crear Tarea</a>
+    }
 </div>
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <h6 class="text-center mb-0 py-2 border border-dark rounded bg-dark text-light">Ideas</h6>
-            <div class="reordenable">
-                <div class="card mt-2" style="border-color: red;">
-                    <div class="card-body">
-                        <h5 class="card-title">Titulo Tarea</h5>
-                        <p class="card-text">Descripcion Tarea</p>
+<div class="container-fluid mt-4">
+    @if(Model.Modelo.Count() == 0){
+        <p class="text-muted text-center">No hay ninguna tarea...</p>
+    }else{
+        <div class="row">
+            <div class="col">
+                <h6 class="text-center mb-0 py-2 border border-dark rounded bg-dark text-light">Ideas</h6>
+                <div class="reordenable">
+                    @* <div class="card" style="border-color: red;">
+                        <div class="card-body">
+                            <h5 class="card-title">Titulo Tarea</h5>
+                            <p class="card-text">Descripcion Tarea</p>
+                        </div>
                     </div>
-                </div>
-                <div class="card mt-2" style="border-color: red;">
-                    <div class="card-body">
-                        <h5 class="card-title">Titulo Tarea</h5>
-                        <p class="card-text">Descripcion Tarea</p>
+                    <div class="card" style="border-color: red;">
+                        <div class="card-body">
+                            <h5 class="card-title">Titulo Tarea</h5>
+                            <p class="card-text">Descripcion Tarea</p>
+                        </div>
                     </div>
+                                        <div class="card" style="border-color: red;">
+                        <div class="card-body">
+                            <h5 class="card-title">Titulo Tarea</h5>
+                            <p class="card-text">Descripcion Tarea</p>
+                        </div>
+                    </div> *@
                 </div>
             </div>
+            <div class="col">
+                <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">ToDo</h6>
+                <div class="reordenable"></div>
+            </div>
+            <div class="col">
+                <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Doing</h6>
+                <div class="reordenable"></div>
+            </div>
+            <div class="col">
+                <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Review</h6>
+                <div class="reordenable"></div>
+            </div>
+            <div class="col">
+                <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Done</h6>
+                <div class="reordenable"></div>
+            </div>
         </div>
-        <div class="col">
-            <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">ToDo</h6>
-        </div>
-        <div class="col">
-            <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Doing</h6>
-        </div>
-        <div class="col">
-            <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Review</h6>
-            
-        </div>
-        <div class="col">
-            <h6 class="text-center py-2 border border-dark rounded bg-dark text-light">Done</h6>
-        </div>
-    </div>
+    }
 </div>
 @section Scripts{
     <script>
+        
+        /*
+        TODO: 
+            - falta actualizar la bd cuando el cambio se efectue
+            - ¿Quienes crean las tareas pueden moverlas? (Para mí, no)
+            - 
+        */
         $(()=>{
+
+            var paquete = @Html.Raw(PaqueteJSON)
+            var cartas = paquete["modelo"];
+            const urlAction = "@Url.Action("ActualizarEstado")"
+            for(var i=0; i<cartas.length;i++){
+            
+                $(".col .reordenable").eq(cartas[i].estado-1).append(`
+                <div class="card" style="border-color: ${cartas[i].color};">
+                    <input type="hidden" name="id" value="${cartas[i].id}">
+                    <div class="card-body">
+                        <h5 class="card-title">${cartas[i].nombre}</h5>
+                        <p class="card-text">${cartas[i].descripcion=="" ? "Sin descripción":cartas[i].descripcion}</p>
+                </div>
+                `);
+            }
             $(".reordenable").sortable({
-                items:".card",
-                cursor:"move"
-            })
+                containment:".row",
+                helper:"clone",
+                cursor:"move",
+                placeholder:"portlet-placeholder",
+                connectWith:".reordenable",
+                start: (e,ui) =>{
+                    ui.placeholder.css("height",ui.item.css("height"))
+                },
+                receive: async (e,ui)=> {
+                    const tarea = {
+                        "id":ui.item.find("input").val(),
+                        "estado":ui.item.parents(".col").index()+1
+                    }
+                    const data = JSON.stringify(tarea)
+                    const res = await fetch(urlAction,{
+                        method:"POST",
+                        body: data,
+                        headers:{
+                            'Content-Type':'application/json'
+                        }
+                    }) 
+                }
+                    
+                
+            }).disableSelection().addClass("bg-dark mt-2 p-3 d-flex flex-column gap-3 rounded-3 border shadow");
+            
+            if(paquete["esPropietario"]){
+                $(".reordenable").sortable("option","cancel",".card")
+            }
         })
     </script>
 }

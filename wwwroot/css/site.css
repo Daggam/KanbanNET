@@ -28,3 +28,26 @@ html {
 /* body {
   margin-bottom: 60px;
 } */
+
+.reordenable{
+  min-height: 150px;
+}
+
+.portlet-placeholder {
+  background: linear-gradient(135deg, #d4d4d4, #f8f8f8, #b8b8b8, #e0e0e0, #d4d4d4);
+  background-size: 200% 200%; 
+  animation: metalizado-efecto 3s linear infinite; 
+  border: 2px solid #aaa; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+  width: 100%;
+  background-color: #258cfb;
+  border-radius: .3rem;
+}
+@keyframes metalizado-efecto {
+  0% {
+      background-position: 0% 50%;
+  }
+  100% {
+      background-position: 100% 50%;
+  }
+}

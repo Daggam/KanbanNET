@@ -29,7 +29,7 @@
                                         <a asp-controller="Tareas" asp-action="Index" asp-route-id="@tablero.Id" class="btn btn-success">Ver</a>
                                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#BorrarTablero" data-bs-routeId="@tablero.Id">Borrar</button>
                                     }else{
-                                        <button type="submit" asp-controller="Tarea" asp-action="Index" asp-route-id="@tablero.Id"  class="btn btn-success ms-auto">Ver</button>
+                                        <a asp-controller="Tareas" asp-action="Index" asp-route-id="@tablero.Id" class="btn btn-success ms-auto">Ver</a>
                                     }
                                 </div>
                             </div>

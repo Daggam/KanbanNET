@@ -7,7 +7,9 @@ namespace tl2_proyecto_2024_Daggam.ViewModels{
         public string Descripcion { get; set; } = string.Empty;
         public string Color { get; set; } = null!;
         public EstadoTarea Estado { get; set; }
-        //Para el Index podría servirme
-        // public int IdUsuarioPropietarioTablero { get; set; }
+    }
+    public class PaqueteListarViewModel{
+        public IEnumerable<ListarTareaViewModel> Modelo { get; set; } = null!;
+        public bool EsPropietario { get; set; }
     }
 }

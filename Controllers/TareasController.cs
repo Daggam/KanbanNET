@@ -25,16 +25,29 @@ public class TareasController:Controller{
         if(id is null) return RedirectToAction("RecursoInvalido","Home");
         var tablero = repositorioTableros.ObtenerTablero((int)id);
         if(tablero is null) return RedirectToAction("RecursoInvalido","Home");
-        
-        var tareas = repositorioTareas.ObtenerTareasPorTablero((int)id);
+        //Si soy dueño del tablero, muestro todas sin importar a quienes ha sido asignadas.
+        IEnumerable<Tarea> tareas = repositorioTareas.ObtenerTareasPorTablero((int)id);
+        bool esPropietario = tablero.IdUsuarioPropietario == usuarioId;
+        //Si no soy el dueño, muestro todas las que se me asignaron dado a ese tablero.
+        if(!esPropietario){
+            tareas = tareas.Where(t => t.IdUsuarioAsignado == usuarioId);
+            //Tendríamos que prohibir a aquellos usuarios quienes no son dueños ni tienen tareas asignadas.
+            if(tareas.Count() == 0){
+                return RedirectToAction("RecursoInvalido","Home");
+            }
+        }
         var modelo = tareas.Select( t => new ListarTareaViewModel(){
-            Id = t.Id,
-            Nombre = t.Nombre,
-            Descripcion = t.Descripcion,
-            Color = t.Color,
-            Estado = t.Estado
-        });
-        return View(modelo);
+                Id = t.Id,
+                Nombre = t.Nombre,
+                Descripcion = t.Descripcion,
+                Color = t.Color,
+                Estado = t.Estado,
+            }).ToList();
+        var paquete = new PaqueteListarViewModel(){
+            Modelo = modelo,
+            EsPropietario = esPropietario
+        };
+        return View(paquete);
     }
     public IActionResult Crear(int? idTablero){
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
@@ -52,7 +65,7 @@ public class TareasController:Controller{
     public IActionResult Crear(CrearTareaViewModel modelo){
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null) return RedirectToAction("Index","Login");   
-        //Corroboar si el tablero existe, si el usuario de la sesion es propietario del tablero y si el usuario al cual asignamos la tarea existe
+        //Corroborar si el tablero existe, si el usuario de la sesion es propietario del tablero y si el usuario al cual asignamos la tarea existe
         var tablero = repositorioTableros.ObtenerTablero(modelo.IdTablero);
         bool resTablero = tablero is not null && tablero.IdUsuarioPropietario == usuarioId;
         bool resUsuario = repositorioUsuarios.ObtenerUsuario(modelo.IdUsuarioAsignado) is not null;
@@ -116,5 +129,23 @@ public class TareasController:Controller{
         }
         repositorioTareas.Borrar(id);
         return RedirectToAction("Index");
+    }
+    [HttpPost]
+    public IActionResult ActualizarEstado([FromBody] ModificarTareaViewModel modelo){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        var tarea = repositorioTareas.ObtenerTarea(modelo.Id);
+
+        if(usuarioId is null || !ModelState.IsValid || tarea is null || tarea.IdUsuarioAsignado == usuarioId) return BadRequest();
+        /*
+        Puede pasar lo siguiente: 
+            - La tarea no pertenece al usuario
+            - La tarea no pertenece al tablero
+            - El usuario no tiene los permisos de mover la tarea (El usuario no es propietario del tablero)
+        */
+        //Corroboramos si la tarea pertenece al usuario, y si pertenece al tablero.
+        
+        tarea.Estado = modelo.Estado;
+        repositorioTareas.ActualizarEstado(tarea);
+        return Ok();
     }
 }
