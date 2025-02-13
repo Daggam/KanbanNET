@@ -13,6 +13,7 @@ public class LoginController:Controller{
         protector = provider.CreateProtector("Kanban.UsuariosController");
     }
     public IActionResult Index(){
+        if(HttpContext.Session.GetInt32("usuarioId") is not null) return RedirectToAction("Index","Tableros");
         var model = new LoginViewModel();
         return View(model);
     }
@@ -29,7 +30,7 @@ public class LoginController:Controller{
         }
         HttpContext.Session.SetString("rol",usuario!.RolUsuario.ToString().ToLower());
         HttpContext.Session.SetInt32("usuarioId",usuario.Id);        
-        return RedirectToAction("Index","Home");
+        return RedirectToAction("Index","Tableros");
     }
 
     public IActionResult Logout(){

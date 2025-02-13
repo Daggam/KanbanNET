@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using tl2_proyecto_2024_Daggam.Models;
 using tl2_proyecto_2024_Daggam.Repositorios;
 using tl2_proyecto_2024_Daggam.ViewModels;
@@ -17,9 +16,6 @@ public class TareasController:Controller{
         this.repositorioTareas = repositorioTareas;
     }
     public IActionResult Index(int? id){
-        //Mi idea es la siguiente: dado un tablero, dar todas las tareas relacionadas a este.
-        //Si no existe dicho tablero, retornar que no existe O podríamos tomar todas las tareas asignadas al usuario 
-        //int? => si no recibe ningún numero podríamos mostrar todas las tareas asignadas al usuario.
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if( usuarioId is null ) return RedirectToAction("Index","Login");
         if(id is null) return RedirectToAction("RecursoInvalido","Home");
@@ -90,60 +86,60 @@ public class TareasController:Controller{
     }
 
     
-    public IActionResult Editar(int id){
-        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
-        if(usuarioId is null) return RedirectToAction("Index","Login");
-        var tarea = repositorioTareas.ObtenerTarea(id);
-        if(tarea==null){
-            return RedirectToAction("RecursoInvalido","Home");
-        }
-        var modelo = new ModificarTareaViewModel(){
-            Id = tarea.Id,
-            Estado = tarea.Estado
-        };
-        return View(modelo);
-    }
-    [HttpPost]
-    public IActionResult Editar(ModificarTareaViewModel modelo){
-        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
-        if(usuarioId is null) return RedirectToAction("Index","Login");
-        var tarea = repositorioTareas.ObtenerTarea(modelo.Id);
-        //El id de la tarea esta alterado (la tarea no existe)
-        //Ya de por si le pertenece al usuario y al tablero(No hay nada en el front que permita cambiarlo)
-        if(!ModelState.IsValid || tarea is null){
-            return View(modelo);
-        }
+    // public IActionResult Editar(int id){
+    //     var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+    //     if(usuarioId is null) return RedirectToAction("Index","Login");
+    //     var tarea = repositorioTareas.ObtenerTarea(id);
+    //     if(tarea==null){
+    //         return RedirectToAction("RecursoInvalido","Home");
+    //     }
+    //     var modelo = new ModificarTareaViewModel(){
+    //         Id = tarea.Id,
+    //         Estado = tarea.Estado
+    //     };
+    //     return View(modelo);
+    // }
+    // [HttpPost]
+    // public IActionResult Editar(ModificarTareaViewModel modelo){
+    //     var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+    //     if(usuarioId is null) return RedirectToAction("Index","Login");
+    //     var tarea = repositorioTareas.ObtenerTarea(modelo.Id);
+    //     //El id de la tarea esta alterado (la tarea no existe)
+    //     //Ya de por si le pertenece al usuario y al tablero(No hay nada en el front que permita cambiarlo)
+    //     if(!ModelState.IsValid || tarea is null){
+    //         return View(modelo);
+    //     }
 
-        tarea.Estado = modelo.Estado;
-        repositorioTareas.ActualizarEstado(tarea);
-        return RedirectToAction("Index");
-    }
+    //     tarea.Estado = modelo.Estado;
+    //     repositorioTareas.ActualizarEstado(tarea);
+    //     return RedirectToAction("Index");
+    // }
 
     [HttpPost]
     public IActionResult Borrar(int id){
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null) return RedirectToAction("Index","Login");
         var tarea = repositorioTareas.ObtenerTarea(id);
-        if(!ModelState.IsValid || tarea is null){
+        //No puedo borrar tareas de un tablero ajeno. El unico capaz de borrar tareas es el propietario.
+        var tablero = repositorioTableros.ObtenerTablero(tarea?.IdTablero ?? -1);
+        if(!ModelState.IsValid || tarea is null || tablero!.IdUsuarioPropietario != usuarioId){
             return RedirectToAction("RecursoInvalido","Home");
         }
         repositorioTareas.Borrar(id);
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", new {id = tablero.Id});
     }
     [HttpPost]
     public IActionResult ActualizarEstado([FromBody] ModificarTareaViewModel modelo){
-        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
-        var tarea = repositorioTareas.ObtenerTarea(modelo.Id);
-
-        if(usuarioId is null || !ModelState.IsValid || tarea is null || tarea.IdUsuarioAsignado == usuarioId) return BadRequest();
         /*
         Puede pasar lo siguiente: 
+            - La tarea no existe.
             - La tarea no pertenece al usuario
-            - La tarea no pertenece al tablero
             - El usuario no tiene los permisos de mover la tarea (El usuario no es propietario del tablero)
         */
-        //Corroboramos si la tarea pertenece al usuario, y si pertenece al tablero.
-        
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        var tarea = repositorioTareas.ObtenerTarea(modelo.Id);
+        var tablero = repositorioTableros.ObtenerTablero(tarea?.IdTablero ?? -1);
+        if(!ModelState.IsValid || usuarioId is null || tarea is null || tarea.IdUsuarioAsignado != usuarioId || tablero!.IdUsuarioPropietario == usuarioId) return BadRequest();
         tarea.Estado = modelo.Estado;
         repositorioTareas.ActualizarEstado(tarea);
         return Ok();

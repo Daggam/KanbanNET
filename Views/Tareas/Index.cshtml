@@ -60,6 +60,26 @@
         </div>
     }
 </div>
+
+<div class="modal fade" id="BorrarTarea" tabindex="-1" aria-labelledby="BorrarTareaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="BorrarTareaLabel">Confirmar acción</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            ¿Está seguro que desea eliminar esta tarea?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <form method="post">
+                <button id="ConfirmarBorrado"type="submit" class="btn btn-danger">Borrar</button>
+            </form>
+        </div>
+        </div>
+    </div>
+</div>
 @section Scripts{
     <script>
         
@@ -70,7 +90,12 @@
             - 
         */
         $(()=>{
-
+            const ruta = "@Url.Action("Borrar")/" 
+            $("#BorrarTarea").on("show.bs.modal", (e)=>{
+                const boton = e.relatedTarget
+                const atributo = boton.getAttribute("data-bs-routeId")
+            $("#ConfirmarBorrado").attr("formaction",ruta+atributo)
+            })
             var paquete = @Html.Raw(PaqueteJSON)
             var cartas = paquete["modelo"];
             const urlAction = "@Url.Action("ActualizarEstado")"
@@ -82,6 +107,7 @@
                     <div class="card-body">
                         <h5 class="card-title">${cartas[i].nombre}</h5>
                         <p class="card-text">${cartas[i].descripcion=="" ? "Sin descripción":cartas[i].descripcion}</p>
+                        ${paquete["esPropietario"] ? `<button type="button" class="btn btn-danger d-block ms-auto" data-bs-toggle="modal" data-bs-target="#BorrarTarea" data-bs-routeId="${cartas[i].id}">Borrar</button>`:""}
                 </div>
                 `);
             }
