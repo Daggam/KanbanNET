@@ -1,6 +1,7 @@
 @model IEnumerable<tl2_proyecto_2024_Daggam.ViewModels.ListarUsuarioViewModel>
 @{
     ViewData["Title"] = "Usuarios";
+    var usuarioId = Context.Session.GetInt32("usuarioId");
 }
 
 <div class="text-center mt-4">
@@ -32,7 +33,9 @@
                             <td>
                                 <div class="d-flex justify-content-evenly my-auto">
                                 <a asp-action="Editar"asp-route-id="@usuario.Id" class="btn btn-primary">Editar</a>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#BorrarUsuario" data-bs-routeId="@usuario.Id">Borrar</button>
+                                @if(usuarioId != usuario.Id){
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#BorrarUsuario" data-bs-routeId="@usuario.Id">Borrar</button>
+                                }
                                 </div>
                             </td>
                         </tr>
@@ -54,12 +57,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            ¿Está seguro que desea eliminar este usuario?
+            <p>¿Está seguro que desea eliminar este usuario?</p>
+            <p>Esta acción eliminará permanentemente los tableros y tareas creados por este usuario.</p>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             <form method="post">
-                <button id="ConfirmarBorrado"type="submit" class="btn btn-success">Confirmar</button>
+                <button id="ConfirmarBorrado"type="submit" class="btn btn-danger">Borrar</button>
             </form>
         </div>
         </div>
