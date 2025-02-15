@@ -14,6 +14,6 @@ namespace tl2_proyecto_2024_Daggam.Models
         public string Descripcion { get; set; } = null!;
         public string Color { get; set; } = null!; // Tiene un color por defecto.
         public EstadoTarea Estado { get; set; }
-        public int IdUsuarioAsignado { get; set; }
+        public int? IdUsuarioAsignado { get; set; }
     }
 }

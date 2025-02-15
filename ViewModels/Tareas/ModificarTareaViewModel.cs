@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using tl2_proyecto_2024_Daggam.Models;
 
 namespace tl2_proyecto_2024_Daggam.ViewModels{

@@ -1,0 +1,29 @@
+@model tl2_proyecto_2024_Daggam.ViewModels.ReasignarTareaViewModel
+
+@{
+    ViewData["Title"] = "Reasignar Tarea";
+}
+
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-5">
+            <div class="card shadow">
+                <div class="card-header"><h4 class="text-center">Reasignar tarea</h1></div>
+                <div class="card-body">
+                    <form asp-action="Reasignar">
+                        <div class="mb-3">
+                            <input type="hidden" asp-for="Id">
+                            <label asp-for="UsuarioId" class="form-label"></label>
+                            <select asp-for="UsuarioId" asp-items="@Model.UsuariosDisponibles" class="form-control"></select>
+                            <span asp-validation-for="UsuarioId" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-success">Reasignar tarea</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <partial name="_ValidationScriptsPartial"/>
+}

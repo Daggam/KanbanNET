@@ -21,24 +21,6 @@
             <div class="col">
                 <h6 class="text-center mb-0 py-2 border border-dark rounded bg-dark text-light">Ideas</h6>
                 <div class="reordenable">
-                    @* <div class="card" style="border-color: red;">
-                        <div class="card-body">
-                            <h5 class="card-title">Titulo Tarea</h5>
-                            <p class="card-text">Descripcion Tarea</p>
-                        </div>
-                    </div>
-                    <div class="card" style="border-color: red;">
-                        <div class="card-body">
-                            <h5 class="card-title">Titulo Tarea</h5>
-                            <p class="card-text">Descripcion Tarea</p>
-                        </div>
-                    </div>
-                                        <div class="card" style="border-color: red;">
-                        <div class="card-body">
-                            <h5 class="card-title">Titulo Tarea</h5>
-                            <p class="card-text">Descripcion Tarea</p>
-                        </div>
-                    </div> *@
                 </div>
             </div>
             <div class="col">
@@ -76,6 +58,7 @@
             <form method="post">
                 <button id="ConfirmarBorrado"type="submit" class="btn btn-danger">Borrar</button>
             </form>
+            
         </div>
         </div>
     </div>
@@ -107,7 +90,9 @@
                     <div class="card-body">
                         <h5 class="card-title">${cartas[i].nombre}</h5>
                         <p class="card-text">${cartas[i].descripcion=="" ? "Sin descripción":cartas[i].descripcion}</p>
-                        ${paquete["esPropietario"] ? `<button type="button" class="btn btn-danger d-block ms-auto" data-bs-toggle="modal" data-bs-target="#BorrarTarea" data-bs-routeId="${cartas[i].id}">Borrar</button>`:""}
+                        ${paquete["esPropietario"] ? `<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#BorrarTarea" data-bs-routeId="${cartas[i].id}">Borrar</button>
+                        <a href="@Url.Action("Reasignar")/${cartas[i].id}" class="btn btn-primary">Reasignar</a>`:""}
+
                 </div>
                 `);
             }

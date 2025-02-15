@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using tl2_proyecto_2024_Daggam.Models;
 using tl2_proyecto_2024_Daggam.Repositorios;
 using tl2_proyecto_2024_Daggam.ViewModels;
@@ -53,7 +54,8 @@ public class TareasController:Controller{
         var tablero = repositorioTableros.ObtenerTablero((int)idTablero);
         if(tablero is null || tablero.IdUsuarioPropietario != usuarioId ) return RedirectToAction("RecursoInvalido","Home");
         var modelo = new CrearTareaViewModel(){
-            IdTablero = (int)idTablero
+            IdTablero = (int)idTablero,
+            UsuariosDisponibles = repositorioUsuarios.ObtenerUsuarios().Where(u=>u.Id!=usuarioId).Select(u => new SelectListItem(u.NombreDeUsuario,u.Id.ToString())).ToList()
         };
         return View(modelo);
     }
@@ -61,16 +63,17 @@ public class TareasController:Controller{
     public IActionResult Crear(CrearTareaViewModel modelo){
         var usuarioId = HttpContext.Session.GetInt32("usuarioId");
         if(usuarioId is null) return RedirectToAction("Index","Login");   
-        //Corroborar si el tablero existe, si el usuario de la sesion es propietario del tablero y si el usuario al cual asignamos la tarea existe
+        //Corroborar si el tablero existe, si el usuario de la sesion es propietario del tablero y si el usuario al cual asignamos la tarea existe y no es el propietario
         var tablero = repositorioTableros.ObtenerTablero(modelo.IdTablero);
         bool resTablero = tablero is not null && tablero.IdUsuarioPropietario == usuarioId;
-        bool resUsuario = repositorioUsuarios.ObtenerUsuario(modelo.IdUsuarioAsignado) is not null;
-        if(!resTablero){
+        var usuario = repositorioUsuarios.ObtenerUsuario(modelo.IdUsuarioAsignado);
+        bool resUsuario = usuario is not null && usuario.Id != usuarioId;
+        if(!resTablero || !resUsuario){
             //Podríamos mostrar un error.
             return RedirectToAction("RecursoInvalido","Home");
         }
-        if(!ModelState.IsValid || !resUsuario){ 
-            //Podemos mostrar un error.
+        if(!ModelState.IsValid){ 
+            modelo.UsuariosDisponibles = repositorioUsuarios.ObtenerUsuarios().Where(u=>u.Id!=usuarioId).Select(u => new SelectListItem(u.NombreDeUsuario,u.Id.ToString())).ToList();
             return View(modelo);
         }
         var tarea = new Tarea(){
@@ -79,41 +82,40 @@ public class TareasController:Controller{
             IdTablero = modelo.IdTablero,
             Color = modelo.Color!, //No puede ser nulo, lo carga automaticamente el formulario
             IdUsuarioAsignado = modelo.IdUsuarioAsignado,
-            Estado = EstadoTarea.Ideas
+            Estado = EstadoTarea.Ideas,
         };
         repositorioTareas.Crear(tarea);
         return RedirectToAction("Index",new {id=modelo.IdTablero});
     }
 
-    
-    // public IActionResult Editar(int id){
-    //     var usuarioId = HttpContext.Session.GetInt32("usuarioId");
-    //     if(usuarioId is null) return RedirectToAction("Index","Login");
-    //     var tarea = repositorioTareas.ObtenerTarea(id);
-    //     if(tarea==null){
-    //         return RedirectToAction("RecursoInvalido","Home");
-    //     }
-    //     var modelo = new ModificarTareaViewModel(){
-    //         Id = tarea.Id,
-    //         Estado = tarea.Estado
-    //     };
-    //     return View(modelo);
-    // }
-    // [HttpPost]
-    // public IActionResult Editar(ModificarTareaViewModel modelo){
-    //     var usuarioId = HttpContext.Session.GetInt32("usuarioId");
-    //     if(usuarioId is null) return RedirectToAction("Index","Login");
-    //     var tarea = repositorioTareas.ObtenerTarea(modelo.Id);
-    //     //El id de la tarea esta alterado (la tarea no existe)
-    //     //Ya de por si le pertenece al usuario y al tablero(No hay nada en el front que permita cambiarlo)
-    //     if(!ModelState.IsValid || tarea is null){
-    //         return View(modelo);
-    //     }
+    public IActionResult Reasignar(int id){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if(usuarioId is null) return RedirectToAction("Index","Login");   
+        //Corroboramos si la tarea existe y tenemos permiso de modificarla
+        var tarea = repositorioTareas.ObtenerTarea(id);
+        bool permiso = (repositorioTableros.ObtenerTablero(tarea?.IdTablero ?? -1)?.IdUsuarioPropietario ?? -1) == usuarioId;
+        if(tarea is null || !permiso) return RedirectToAction("RecursoInvalido","Home");
 
-    //     tarea.Estado = modelo.Estado;
-    //     repositorioTareas.ActualizarEstado(tarea);
-    //     return RedirectToAction("Index");
-    // }
+        var modelo = new ReasignarTareaViewModel(){
+            Id = id,
+            UsuarioId = tarea.IdUsuarioAsignado,
+            UsuariosDisponibles = repositorioUsuarios.ObtenerUsuarios().Where(u=>u.Id!=usuarioId).Select(u => new SelectListItem(u.NombreDeUsuario,u.Id.ToString())).ToList()
+        };
+        return View(modelo);
+    }
+
+    [HttpPost]
+    public IActionResult Reasignar(ReasignarTareaViewModel modelo){
+        var usuarioId = HttpContext.Session.GetInt32("usuarioId");
+        if(usuarioId is null) return RedirectToAction("Index","Login");   
+        //Corroboramos si la tarea existe y tenemos permiso de modificarla
+        var tarea = repositorioTareas.ObtenerTarea(modelo.Id);
+        bool permiso = (repositorioTableros.ObtenerTablero(tarea?.IdTablero ?? -1)?.IdUsuarioPropietario ?? -1) == usuarioId;
+        if(tarea is null || !permiso || !ModelState.IsValid) return RedirectToAction("RecursoInvalido","Home");
+        //No puede ser nulo (Pusimos required en el viewmodel)
+        repositorioTareas.ReasginarUsuario(modelo.Id,(int)modelo.UsuarioId!);
+        return RedirectToAction("Index",new {id=tarea.IdTablero});
+    }
 
     [HttpPost]
     public IActionResult Borrar(int id){
@@ -130,6 +132,19 @@ public class TareasController:Controller{
     }
     [HttpPost]
     public IActionResult ActualizarEstado([FromBody] ModificarTareaViewModel modelo){
+        /*
+            Primera alternativa:
+            Quienes pueden mover tareas:
+                - Creador del tablero (actua como especie de administrador del tablero)
+                - Usuario con sus tareas asignadas.
+                (Complicado puesto a que no iría en tiempo real)
+            Segunda alternativa:
+                - Usuarios con sus tareas asignadas. 
+                (Más complejo puesto a que si el creador del tablero se autoasigna una tarea, podrá mover sus tareas pero no la de los demás)
+                (Si hago esto: debo cambiar el viewmodel para agregar el propietarioTareaId, para cada carta cargada, permitir que solo se muevan las tareas de aquellos usuarios que tengan permiso)
+            Tercera alternativa:
+                -Usuarios con tareas asignadas (El creador del tablero no puede autoasignarse tareas.)
+        */
         /*
         Puede pasar lo siguiente: 
             - La tarea no existe.

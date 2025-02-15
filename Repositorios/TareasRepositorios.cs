@@ -9,6 +9,7 @@ public interface IRepositorioTareas{
     IEnumerable<Tarea> ObtenerTareasPorTablero(int tableroId);
     Tarea? ObtenerTarea(int id);
     void ActualizarEstado(Tarea tarea);
+    void ReasginarUsuario(int idTarea,int idUsuario);
     void Borrar(int id);
 }
 public class RepositorioTareas:IRepositorioTareas{
@@ -78,7 +79,7 @@ public class RepositorioTareas:IRepositorioTareas{
                         Estado=(EstadoTarea) reader.GetInt16(3),
                         Descripcion = reader.GetString(4),
                         Color = reader.GetString(5),
-                        IdUsuarioAsignado = reader.GetInt32(6)
+                        IdUsuarioAsignado = (reader[6] is DBNull) ? null:reader.GetInt32(6)
                     });
                 }
             }
@@ -102,7 +103,8 @@ public class RepositorioTareas:IRepositorioTareas{
                         Estado=(EstadoTarea) reader.GetInt16(3),
                         Descripcion = reader.GetString(4),
                         Color = reader.GetString(5),
-                        IdUsuarioAsignado = reader.GetInt32(6)
+                        IdUsuarioAsignado = (reader[6] is DBNull) ? null:reader.GetInt32(6)
+
                     };
                 }
             }
@@ -135,5 +137,20 @@ public class RepositorioTareas:IRepositorioTareas{
             command.ExecuteNonQuery();
             connection.Close();
         }   
+    }
+
+    public void ReasginarUsuario(int idTarea, int idUsuario)
+    {
+        using(var connection = new SqliteConnection(connectionString)){
+            connection.Open();
+            var command = connection.CreateCommand();
+            command.CommandText = @"UPDATE Tarea SET id_usuario_asignado=@IdUsuario WHERE id=@IdTarea ";
+            command.Parameters.AddRange([
+                new SqliteParameter("@IdUsuario",idUsuario),
+                new SqliteParameter("@IdTarea",idTarea)
+            ]);
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
     }
 }
