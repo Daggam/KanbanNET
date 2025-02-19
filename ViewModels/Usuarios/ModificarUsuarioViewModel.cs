@@ -9,7 +9,7 @@ namespace tl2_proyecto_2024_Daggam.ViewModels
         [Display(Name = "Nombre de usuario")]
         [Required(ErrorMessage ="Ingrese un nombre de usuario")]
         [StringLength(maximumLength:50,MinimumLength = 3, ErrorMessage = "Ingrese un nombre de usuario entre {2} y {1} caracteres")]
-        [Remote(action:"UsuarioExiste",controller:"Usuarios")]
+        // [Remote(action:"EditarUsuarioExiste",controller:"Usuarios")]
         public string NombreDeUsuario { get; set; } = null!;
         [Display(Name ="Contraseña")]
         [Required(ErrorMessage = "Ingrese una contraseña")]

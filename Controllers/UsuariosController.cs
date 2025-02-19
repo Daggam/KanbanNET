@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using tl2_proyecto_2024_Daggam.Models;
 using tl2_proyecto_2024_Daggam.Repositorios;
 using tl2_proyecto_2024_Daggam.ViewModels;
 namespace tl2_proyecto_2024_Daggam.Controllers;
 
-//TODO: AL CREAR UN USUARIO, CORROBORAR SI ESE NOMBRE EXISTE EN LA BASE DE DATOS. 
 public class UsuariosController:Controller{
     private readonly IRepositorioUsuarios repositorioUsuarios;
     private readonly ILogger<UsuariosController> logger;
@@ -101,6 +99,10 @@ public class UsuariosController:Controller{
             int? usuarioId = HttpContext.Session.GetInt32("usuarioId");
             if(usuarioId is null) return RedirectToAction("Index","Login");
             if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Tableros");
+            bool usuarioExiste = repositorioUsuarios.ObtenerUsuarios().Any(u => u.NombreDeUsuario == usuariovm.NombreDeUsuario && u.Id != usuariovm.Id);
+            if(usuarioExiste){
+                ModelState.AddModelError("NombreDeUsuario",$"El nombre {usuariovm.NombreDeUsuario} ya está tomado.");
+            }
             if(!ModelState.IsValid){
                 return View(usuariovm);
             }
