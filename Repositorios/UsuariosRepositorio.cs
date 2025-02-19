@@ -10,6 +10,8 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
         void Actualizar(Usuario usuario);
         void Borrar(int id);
         bool Existe(int id);
+        bool Existe(string username);
+
     }
 
     public class RepositorioUsuarios:IRepositorioUsuarios{
@@ -141,7 +143,19 @@ namespace tl2_proyecto_2024_Daggam.Repositorios{
                 return response is not null;
             }
         }
-    
+
+        public bool Existe(string username)
+        {
+            using(var connection = new SqliteConnection(connectionString)){
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT 1 FROM Usuario WHERE nombre_de_usuario=@Username";
+                command.Parameters.AddWithValue("@Username",username);
+                var response = command.ExecuteScalar();
+                connection.Close();
+                return response is not null;
+            }
+        }
     }
 
 }

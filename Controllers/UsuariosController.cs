@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using tl2_proyecto_2024_Daggam.Models;
 using tl2_proyecto_2024_Daggam.Repositorios;
 using tl2_proyecto_2024_Daggam.ViewModels;
@@ -100,7 +101,6 @@ public class UsuariosController:Controller{
             int? usuarioId = HttpContext.Session.GetInt32("usuarioId");
             if(usuarioId is null) return RedirectToAction("Index","Login");
             if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Tableros");
-
             if(!ModelState.IsValid){
                 return View(usuariovm);
             }
@@ -140,6 +140,23 @@ public class UsuariosController:Controller{
             repositorioUsuarios.Borrar(id);
             logger.LogInformation($"Se eliminó al usuario #{id}.");
             return RedirectToAction("Index");
+        }catch(Exception e){
+            logger.LogError(e.ToString());
+            return RedirectToAction("RecursoInvalido","Home");
+        }
+    }
+    [HttpGet]
+    public IActionResult UsuarioExiste(string nombredeusuario){
+        try{
+            int? usuarioId = HttpContext.Session.GetInt32("usuarioId");
+            if(usuarioId is null) return RedirectToAction("Index","Login");
+            if(HttpContext.Session.GetString("rol") != "administrador") return RedirectToAction("Index","Tableros");
+            bool existeUsuario = repositorioUsuarios.Existe(nombredeusuario);
+        
+            if(existeUsuario){
+                return Json($"El usuario {nombredeusuario} ya existe.");
+            }
+            return Json(true);
         }catch(Exception e){
             logger.LogError(e.ToString());
             return RedirectToAction("RecursoInvalido","Home");
